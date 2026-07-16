@@ -11,16 +11,16 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     metadataBase: base,
-    title: "نَبض | إدارة عيادتك بذكاء",
+    title: "الريم | إدارة عيادتك بذكاء",
     description: "منصة عربية حديثة لإدارة العيادات والمواعيد والمرضى والمدفوعات بسهولة.",
     openGraph: {
-      title: "نَبض | إدارة عيادتك بذكاء",
+      title: "الريم | إدارة عيادتك بذكاء",
       description: "كل ما تحتاجه لإدارة عيادتك وحجوزاتك في تجربة واحدة ذكية.",
       type: "website",
       locale: "ar_EG",
-      images: [{ url: imageUrl, width: 1737, height: 909, alt: "منصة نَبض لإدارة العيادات" }],
+      images: [{ url: imageUrl, width: 1737, height: 909, alt: "منصة الريم لإدارة العيادات" }],
     },
-    twitter: { card: "summary_large_image", title: "نَبض | إدارة عيادتك بذكاء", description: "إدارة حديثة للمواعيد والمرضى والمدفوعات.", images: [imageUrl] },
+    twitter: { card: "summary_large_image", title: "الريم | إدارة عيادتك بذكاء", description: "إدارة حديثة للمواعيد والمرضى والمدفوعات.", images: [imageUrl] },
   };
 }
 
