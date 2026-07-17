@@ -11,6 +11,8 @@ model Doctor {
   name             String
   specialization   String
   phone            String
+  whatsappPhone   String              @default("") @map("whatsapp_phone")
+  email            String              @default("")
   clinicName       String              @map("clinic_name")
   bookingSlug      String              @unique @map("booking_slug")
   timezone         String              @default("Africa/Cairo")

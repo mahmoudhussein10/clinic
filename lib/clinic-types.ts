@@ -49,6 +49,8 @@ export type Doctor = {
   name: string;
   specialization: string;
   phone: string;
+  whatsappPhone: string;
+  email: string;
   clinicName: string;
   bookingSlug: string;
   timezone: string;

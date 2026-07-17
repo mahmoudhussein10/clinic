@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import "./globals.css";
 import "./clinic-functional.css";
+import "./design-system.css";
 
 export async function generateMetadata(): Promise<Metadata> {
   const requestHeaders = await headers();
@@ -19,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: "كل ما تحتاجه لإدارة عيادتك وحجوزاتك في تجربة واحدة ذكية.",
       type: "website",
       locale: "ar_EG",
-      images: [{ url: imageUrl, width: 1737, height: 909, alt: "منصة الريم لإدارة العيادات" }],
+      images: [{ url: imageUrl, width: 1254, height: 1254, alt: "منصة الريم لإدارة العيادات" }],
     },
     twitter: { card: "summary_large_image", title: "الريم | إدارة عيادتك بذكاء", description: "إدارة حديثة للمواعيد والمرضى والمدفوعات.", images: [imageUrl] },
   };

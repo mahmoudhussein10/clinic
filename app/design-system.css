@@ -1,0 +1,263 @@
+/* Shared brand, button, and responsive system */
+*{box-sizing:border-box}
+html,body{max-width:100%;overflow-x:hidden}
+img,svg{max-width:100%}
+
+.brand-logo{position:relative;display:block;overflow:hidden;flex:none;background:#fff}
+.brand-logo img{display:block}
+.brand-logo--symbol{width:52px;height:52px;border-radius:16px;box-shadow:0 8px 24px rgba(67,27,30,.14)}
+.brand-logo--symbol img{position:absolute;width:142%;height:auto;max-width:none;left:50%;top:50%;transform:translate(-50%,-52%) scale(1.04)}
+.brand-logo--full{width:min(220px,100%);aspect-ratio:1;border-radius:22px}
+.brand-logo--full img{width:100%;height:100%;object-fit:contain}
+.sidebar-brand-logo{width:60px;height:60px;border-radius:18px}
+.doctor-brand-logo{width:46px;height:46px;border-radius:14px}
+.topbar-brand-logo{width:42px;height:42px;border-radius:13px;box-shadow:none}
+.public-brand-logo{width:min(210px,100%);border-radius:24px;box-shadow:0 20px 55px rgba(6,20,22,.2)}
+.doctor-photo-logo{width:86px;height:86px;border-radius:25px;box-shadow:none}
+.public-brand{justify-content:center}
+.doctor-photo{overflow:hidden;background:#fff!important;padding:5px}
+
+button,.ui-button,.primary-button,.ghost-button,.outline-button,.icon-text-button,.whatsapp-button,.public-primary,
+.success-actions button,.booking-disabled a,.patient-contact-actions a,.patient-contact-actions button,.patient-quick-actions a,.patient-quick-actions button{
+  min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 16px;border-radius:12px;
+  font:800 14px/1.2 Tahoma,"Segoe UI",Arial,sans-serif;white-space:nowrap;text-align:center;vertical-align:middle;
+  transition:transform .18s ease,box-shadow .18s ease,background-color .18s ease,border-color .18s ease,opacity .18s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+button>svg,.ui-button>svg,.primary-button>svg,.ghost-button>svg,.outline-button>svg,.icon-text-button>svg,.whatsapp-button>svg,.public-primary>svg{width:18px;height:18px;flex:0 0 18px}
+button:not(:disabled):hover,.ui-button:not(:disabled):hover{transform:translateY(-1px)}
+button:not(:disabled):active,.ui-button:not(:disabled):active{transform:translateY(0) scale(.98)}
+button:disabled,.ui-button:disabled{opacity:.5;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid rgba(191,121,112,.35);outline-offset:3px}
+.ui-button{border:1px solid transparent;cursor:pointer}
+.ui-button--primary{color:#fff;background:#bc7b72;box-shadow:0 10px 24px rgba(188,123,114,.25)}
+.ui-button--secondary{color:#244344;background:#e9f4f1}.ui-button--outline{color:#253c3e;background:#fff;border-color:#dce3df}
+.ui-button--ghost{color:#536466;background:transparent}.ui-button--destructive{color:#a74235;background:#fff0ec}.ui-button--success{color:#fff;background:#1e9f83}
+.ui-button--sm{min-height:38px;padding-inline:13px;font-size:13px}.ui-button--lg{min-height:50px;padding-inline:22px;font-size:15px}.ui-button--icon{width:44px;padding:0}
+.ui-button__label{display:inline-block}.ui-button__spinner{width:18px;height:18px;border:2px solid currentColor;border-left-color:transparent;border-radius:50%;animation:clinic-spin .7s linear infinite}
+
+.clinic-app .content-area{width:100%;max-width:1700px;margin-inline:auto;padding-inline:clamp(16px,2.4vw,38px)}
+.panel,.dashboard-hero,.booking-link-card,.live-stat-card{min-width:0;max-width:100%}
+.appointment-table{width:100%;overflow:hidden}
+.appointment-table-row,.appointment-table-head{min-width:0}
+.booking-modal{width:min(620px,calc(100vw - 28px));max-height:min(860px,calc(100dvh - 28px));overscroll-behavior:contain}
+.booking-modal textarea{width:100%;min-height:100px;resize:vertical;border:1px solid var(--line);border-radius:12px;padding:12px;font:inherit}
+.schedule-day>*{min-width:0}
+.schedule-day input,.schedule-day select{max-width:100%}
+.public-booking-workspace{min-width:0}
+
+@media (max-width:1200px){
+  .settings-live-layout{grid-template-columns:1fr}.settings-side-stack{grid-template-columns:1fr 1fr}
+  .schedule-day{grid-template-columns:120px repeat(4,minmax(110px,1fr));overflow-x:auto;padding-bottom:18px}
+  .public-days,.public-slots{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:900px){
+  .dashboard-columns,.patient-live-grid{grid-template-columns:1fr}
+  .booking-link-card{grid-template-columns:auto 1fr}.booking-state{grid-column:auto}.booking-link-actions{grid-column:1/-1;flex-wrap:wrap}
+  .appointments-actions{align-items:stretch}.segmented{order:3;width:100%}.segmented button{flex:1}
+  .appointment-table-head{display:none}.appointment-table{display:grid;gap:10px;margin-top:14px}.appointment-table-row{display:grid;grid-template-columns:1fr auto;gap:9px 14px;padding:16px;border:1px solid var(--line);border-radius:16px;text-align:right;background:#fff}.appointment-table-row>*{min-width:0}.appointment-table-row .patient-summary{grid-row:1}.appointment-table-row .row-notes{grid-column:1/-1}.appointment-table-row .row-action{justify-self:end}
+  .public-booking-page{grid-template-columns:300px 1fr}.public-clinic-card{padding:28px 24px}.public-brand-logo{width:170px}.doctor-photo{margin-top:38px}.public-booking-workspace{padding-inline:24px}
+}
+@media (max-width:760px){
+  body{font-size:15px}.sidebar{max-width:88vw}.brand{padding-bottom:18px}.sidebar-brand-logo{width:54px;height:54px}
+  .topbar{padding-inline:14px}.topbar-actions .icon-text-button{width:44px;padding:0;font-size:0;gap:0}.topbar-actions .icon-text-button svg{margin:0}.top-avatar{display:inline-flex!important;width:44px;padding:0}
+  .content-area{padding:16px 14px 92px}.dashboard-hero{padding:22px}.dashboard-hero h2{font-size:clamp(25px,8vw,34px)}.hero-actions{display:grid;grid-template-columns:1fr}.hero-actions button{width:100%}.next-appointment-card{width:100%;min-width:0}
+  .live-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.live-stat-card{padding:15px}.live-stat-card>strong{font-size:26px}
+  .panel,.real-schedule-panel,.insight-live,.appointments-live-panel,.patient-live-panel,.contacts-panel,.schedule-settings-panel,.booking-rules,.exceptions-panel{padding:17px;border-radius:18px}
+  .panel-header{align-items:flex-start;flex-wrap:wrap}.panel-header>.primary-button{width:100%}
+  .compact-appointments>button{grid-template-columns:70px 42px minmax(0,1fr);padding-block:8px}.compact-appointments .status-pill-lg{grid-column:2/4;justify-self:start}
+  .insight-metrics,.settings-side-stack{grid-template-columns:1fr}
+  .booking-link-card{padding:17px;grid-template-columns:48px 1fr}.booking-link-icon{width:48px;height:48px}.booking-state{grid-column:1/-1;justify-self:start}.booking-link-actions{display:grid;grid-template-columns:1fr 1fr;width:100%}.booking-link-actions .whatsapp-button{grid-column:1/-1}
+  .appointments-actions{display:grid;grid-template-columns:1fr}.appointments-actions>.primary-button,.date-switcher,.segmented{width:100%}.table-toolbar{gap:12px}.filter-tabs{overflow-x:auto;scrollbar-width:none;padding-bottom:5px}.filter-tabs button{flex:none}.appointment-search{width:100%}
+  .appointment-table-row{grid-template-columns:1fr}.appointment-table-row>*{grid-column:1!important}.appointment-table-row .row-action{justify-self:start}
+  .patient-contact-actions,.patient-quick-actions,.status-actions,.success-actions{display:grid!important;grid-template-columns:1fr!important}.patient-contact-actions>*{width:100%}
+  .schedule-days{display:grid;gap:12px}.schedule-day{display:grid;grid-template-columns:1fr 1fr;overflow:visible;padding:15px;border:1px solid var(--line);border-radius:15px}.schedule-day .day-toggle{grid-column:1/-1}.schedule-day label:nth-child(4),.schedule-day label:nth-child(5){grid-column:auto}
+  .form-row,.booking-review,.exception-times{grid-template-columns:1fr}.modal-backdrop{padding:10px}.booking-modal{padding:22px 16px;border-radius:20px}.modal-heading{padding-left:38px}
+  .public-booking-page{display:block}.public-clinic-card{min-height:auto;padding:22px 18px}.public-brand-logo{width:145px}.doctor-photo{width:74px;height:74px;margin:24px 0 16px}.doctor-photo-logo{width:66px;height:66px}.public-clinic-card>p{margin-block:14px}.public-security{margin-top:18px}.public-booking-workspace{padding:20px 14px 44px}.public-booking-workspace>header{gap:12px}.public-step-card{margin-top:38px}.public-days{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.public-days button{height:100px}.public-slots{grid-template-columns:repeat(2,minmax(0,1fr))}.public-step-card h2{font-size:clamp(25px,8vw,34px)}
+}
+@media (max-width:390px){
+  .live-stats,.public-days,.public-slots,.schedule-day{grid-template-columns:1fr}.booking-progress span{width:28px;height:28px}.booking-progress span+span{margin-left:11px}.booking-progress span+span:before{width:11px;right:28px}.page-title p{display:none}.sidebar-brand-logo{width:48px;height:48px}
+}
+
+/* Public booking actions */
+.public-booking-page button,.public-booking-page a{font-family:Tahoma,"Segoe UI",Arial,sans-serif}
+.public-back-button{min-height:46px;padding:0 10px 0 17px;border:1px solid #dfe5e1;border-radius:14px;background:#fff;color:var(--ink)!important;display:inline-flex!important;align-items:center;justify-content:center;gap:9px;text-decoration:none;font-size:14px!important;font-weight:900!important;box-shadow:0 8px 22px rgba(25,54,56,.08);white-space:nowrap;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.public-back-button svg{width:30px;height:30px;padding:6px;border-radius:9px;background:#f5e9e6;color:#9e625b;flex:none}.public-back-button:hover{border-color:#c69a94;box-shadow:0 11px 28px rgba(75,43,42,.13);transform:translateY(-1px)}
+.step-back{width:max-content;min-height:42px;margin:0 0 18px;padding:0 12px!important;border:1px solid #e0e5e1!important;border-radius:12px!important;background:#fff!important;color:#506164!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;font-size:13px!important;font-weight:900!important;box-shadow:0 5px 16px rgba(25,54,56,.06)}
+.step-back svg{color:#a56861}.step-back:hover{color:var(--ink)!important;border-color:#c89e98!important;background:#fffaf8!important}
+.public-choice-button{width:100%;min-height:120px;padding:16px!important;border:1px solid #dfe4e0!important;border-radius:18px!important;background:#fff!important;color:var(--ink)!important;display:grid!important;place-content:center!important;gap:5px!important;box-shadow:0 8px 22px rgba(25,54,56,.045);cursor:pointer}
+.public-choice-button:hover{border-color:#bd837a!important;background:#fffaf8!important;box-shadow:0 13px 30px rgba(91,54,51,.1)!important}
+.public-slot-button{width:100%;min-height:56px;padding:0 15px!important;border:1px solid #dfe4e0!important;border-radius:14px!important;background:#fff!important;color:var(--ink)!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:8px!important;font-size:15px!important;font-weight:900!important;box-shadow:0 6px 18px rgba(25,54,56,.04);cursor:pointer}
+.public-slot-button svg{color:#6f8384}.public-slot-button:hover{border-color:#b98279!important;background:#fffaf8!important}.public-slot-button.selected{border-color:#173638!important;background:#173638!important;color:#fff!important;box-shadow:0 10px 24px rgba(23,54,56,.2)!important}.public-slot-button.selected svg{color:#8de7d4}
+.public-primary{min-height:54px!important;padding:0 22px!important;border-radius:14px!important;background:linear-gradient(135deg,#c58a80,#a96760)!important;color:#fff!important;font-size:15px!important;font-weight:900!important;box-shadow:0 12px 27px rgba(169,103,96,.25)!important;cursor:pointer}.public-primary:hover:not(:disabled){box-shadow:0 15px 34px rgba(169,103,96,.34)!important}.public-primary:disabled{background:#e2b2a9!important;color:#fff!important;opacity:.72!important;cursor:not-allowed}
+.availability-notice{display:flex;align-items:flex-start;gap:11px;margin:0 0 20px;padding:14px 15px;border:1px solid #ead4cf;border-radius:14px;background:#fff8f6;color:#694943}.availability-notice>svg{width:35px;height:35px;padding:8px;border-radius:10px;background:#f4dfda;color:#a8675f;flex:none}.availability-notice strong,.availability-notice span{display:block}.availability-notice strong{font-size:14px}.availability-notice span{margin-top:4px;font-size:12px;line-height:1.7;color:#80645f}
+.success-actions button,.success-actions a,.booking-disabled a{border-radius:13px!important;font-size:14px!important;box-shadow:0 6px 18px rgba(25,54,56,.06)}
+@media(max-width:760px){.public-back-button{min-height:44px;padding-inline:8px 13px}.public-back-button svg{width:28px;height:28px}.public-choice-button{min-height:104px}.public-slot-button{min-height:54px}.step-back{margin-bottom:14px}.availability-notice{padding:12px}.availability-notice span{font-size:11px}}
+/* Premium mobile-first refinement */
+html{font-variant-numeric:tabular-nums lining-nums}
+input,select,textarea,time,.appointment-table,.live-stats,.booking-progress,.public-days,.public-slots{font-variant-numeric:tabular-nums lining-nums}
+.booking-context{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 18px}
+.booking-context>span{min-width:0;padding:13px 14px;border:1px solid #e1e6e2;border-radius:13px;background:#fff;box-shadow:0 5px 16px rgba(25,54,56,.035)}
+.booking-context small,.booking-context strong{display:block}.booking-context small{color:var(--muted);font-size:11px;margin-bottom:5px}.booking-context strong{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.public-step-card{animation:premium-step-in .24s ease both}.panel,.live-stat-card,.booking-link-card{transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease}
+.panel:hover{border-color:#d8dfda}.search-field:focus-within{border-color:#b9877f;box-shadow:0 0 0 4px rgba(185,135,127,.1)}
+@keyframes premium-step-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media(max-width:760px){
+  .public-clinic-card{display:grid!important;grid-template-columns:72px minmax(0,1fr);grid-template-rows:auto auto auto;column-gap:14px;align-items:center;padding:14px 16px!important;background:linear-gradient(135deg,#173638,#275b57)!important}
+  .public-clinic-card .public-brand,.public-clinic-card>p,.clinic-public-details,.public-security{display:none!important}
+  .doctor-photo{grid-column:1;grid-row:1/4;width:68px!important;height:68px!important;margin:0!important;border-radius:20px!important}
+  .doctor-photo-logo{width:62px;height:62px}.public-kicker{grid-column:2;grid-row:1;font-size:11px}.public-clinic-card h1{grid-column:2;grid-row:2;font-size:21px!important;margin:2px 0!important}.public-clinic-card h2{grid-column:2;grid-row:3;font-size:13px!important}
+  .public-booking-workspace{padding:0 14px calc(104px + env(safe-area-inset-bottom))!important}
+  .public-booking-workspace>header{position:sticky;top:0;z-index:30;margin-inline:-14px;padding:11px 14px;background:rgba(244,246,242,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(218,225,220,.8)}
+  .public-step-card{margin-top:24px!important;padding-bottom:16px}.public-step-card h2{margin-top:8px}.step-number{font-size:11px}
+  .booking-context{grid-template-columns:1fr 1fr;gap:8px}.booking-context>span{padding:11px}.booking-context strong{font-size:12px}.booking-context small{font-size:10px}
+  .public-step-card>.public-primary,.public-patient-form>.public-primary{position:fixed!important;z-index:40;right:14px;left:14px;bottom:calc(12px + env(safe-area-inset-bottom));width:calc(100% - 28px)!important;margin:0!important;min-height:58px!important;border:1px solid rgba(255,255,255,.35)!important;box-shadow:0 16px 42px rgba(83,47,44,.3),0 0 0 9px rgba(244,246,242,.94)!important}
+  .public-patient-form{padding-bottom:12px}.public-patient-form input,.public-patient-form textarea{font-size:16px!important}
+  .public-days,.public-slots{gap:9px}.public-choice-button{min-height:98px!important}.public-slot-button{min-height:56px!important}
+  .empty-state{padding:34px 16px}.loading-grid{grid-template-columns:1fr 1fr}.loading-grid span{height:108px}
+  .dashboard-hero{min-height:auto!important}.dashboard-hero p{max-width:32ch}.live-stat-card{min-height:112px}.appointment-table-row{box-shadow:0 6px 20px rgba(25,54,56,.045)}
+}
+@media(max-width:360px){.booking-context{grid-template-columns:1fr}.public-days,.public-slots{grid-template-columns:1fr!important}.booking-progress span{width:26px;height:26px}.booking-progress span+span{margin-left:7px}.booking-progress span+span:before{width:7px;right:26px}.public-back-button span{display:none}.public-back-button{width:42px;padding:0!important}}
+@media (max-width: 760px) {
+  .public-step-card {
+    animation: none;
+    transform: none;
+  }
+}
+
+/* Refined booking step header */
+.step-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 0 0 18px;
+}
+.step-toolbar-single {
+  justify-content: flex-start;
+}
+.step-toolbar .step-back,
+.step-toolbar .step-number {
+  margin: 0;
+}
+.step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: max-content;
+  min-height: 34px;
+  padding: 7px 12px;
+  border: 1px solid rgba(183, 112, 98, .2);
+  border-radius: 999px;
+  background: #fff7f4;
+  color: #8f5148 !important;
+  font-size: 13px !important;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: 0 5px 16px rgba(91, 53, 48, .05);
+}
+.step-number::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: #c3796b;
+  box-shadow: 0 0 0 4px rgba(195, 121, 107, .12);
+}
+.public-success .step-number {
+  margin: 0 auto 14px;
+}
+@media (max-width: 430px) {
+  .step-toolbar {
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .step-number {
+    min-height: 32px;
+    padding: 6px 10px;
+    font-size: 12px !important;
+  }
+}
+/* Clinic contact and booking notification settings */
+.clinic-contact-settings .panel-header {
+  margin-bottom: 18px;
+}
+.clinic-contact-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.clinic-contact-fields label {
+  display: grid;
+  gap: 8px;
+}
+.clinic-contact-fields label > span {
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 900;
+}
+.clinic-contact-fields input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fafbf9;
+  color: var(--ink);
+  font: 700 15px Arial, sans-serif;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s, background .2s;
+}
+.clinic-contact-fields input:focus {
+  border-color: #bd8277;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(189, 130, 119, .12);
+}
+.clinic-contact-fields .contact-email-field,
+.clinic-contact-fields > p {
+  grid-column: 1 / -1;
+}
+.clinic-contact-fields > p {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  padding: 13px;
+  border: 1px solid rgba(45, 175, 151, .18);
+  border-radius: 13px;
+  background: rgba(45, 175, 151, .07);
+  color: #32796d;
+}
+.clinic-contact-fields > p span,
+.clinic-contact-fields > p strong,
+.clinic-contact-fields > p small {
+  display: block;
+}
+.clinic-contact-fields > p strong {
+  font-size: 13px;
+}
+.clinic-contact-fields > p small {
+  margin-top: 4px;
+  color: #64837e;
+  font-size: 11px;
+  line-height: 1.7;
+}
+@media (max-width: 560px) {
+  .clinic-contact-fields {
+    grid-template-columns: 1fr;
+  }
+  .clinic-contact-fields .contact-email-field,
+  .clinic-contact-fields > p {
+    grid-column: auto;
+  }
+}
+.clinic-contact-fields > p.email-setup {
+  border-color: rgba(195, 121, 107, .22);
+  background: #fff7f4;
+  color: #8f5148;
+}
+.clinic-contact-fields > p.email-setup small {
+  color: #8b6963;
+}

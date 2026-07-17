@@ -4,6 +4,7 @@ import { fail, ok } from "@/lib/api-response";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 type Context = { params: Promise<{ slug: string }> };
 
@@ -13,12 +14,13 @@ export async function GET(_: Request, context: Context) {
     const doctor = await getDoctorBySlug(slug);
     if (!doctor) throw new ClinicError("DOCTOR_NOT_FOUND", "صفحة الحجز غير موجودة", 404);
     const scheduleData = await listSchedule(doctor.id);
-    const schedule = scheduleData.schedules.map(({ dayOfWeek, isActive }) => ({ dayOfWeek, isActive }));
+    const schedule = scheduleData.schedules;
     const publicDoctor = {
       id: doctor.id,
       name: doctor.name,
       specialization: doctor.specialization,
       phone: doctor.phone,
+      whatsappPhone: doctor.whatsappPhone,
       clinicName: doctor.clinicName,
       bookingSlug: doctor.bookingSlug,
       timezone: doctor.timezone,

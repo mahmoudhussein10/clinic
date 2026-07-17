@@ -1,4 +1,5 @@
 import { ClinicError, createAppointment, getDoctorBySlug } from "@/lib/clinic-db";
+import { notifyBookingSafely } from "@/lib/booking-email";
 import { fail, ok } from "@/lib/api-response";
 
 export const runtime = "nodejs";
@@ -20,7 +21,8 @@ export async function POST(request: Request) {
       source: "public_booking",
       status: "pending",
     });
-    return ok({ ...appointment, patientPhone: appointment.patientPhone }, "تم حجز موعدك بنجاح", 201);
+    await notifyBookingSafely(doctor, appointment);
+    return ok({ ...appointment, patientPhone: appointment.patientPhone }, "تم الحجز", 201);
   } catch (error) {
     return fail(error);
   }

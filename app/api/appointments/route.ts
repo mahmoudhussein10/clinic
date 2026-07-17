@@ -1,4 +1,5 @@
-import { createAppointment, listAppointments } from "@/lib/clinic-db";
+import { createAppointment, getDoctor, listAppointments } from "@/lib/clinic-db";
+import { notifyBookingSafely } from "@/lib/booking-email";
 import type { AppointmentStatus } from "@/lib/clinic-types";
 import { fail, ok } from "@/lib/api-response";
 
@@ -27,6 +28,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const appointment = await createAppointment({ ...body, source: body.source || "manual" });
+    await notifyBookingSafely(await getDoctor(appointment.doctorId), appointment);
     return ok(appointment, "تمت إضافة الموعد", 201);
   } catch (error) {
     return fail(error);
