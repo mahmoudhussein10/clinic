@@ -7,10 +7,10 @@ export const dynamic = "force-dynamic";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const doctor = getDoctorBySlug(String(body.bookingSlug || ""));
+    const doctor = await getDoctorBySlug(String(body.bookingSlug || ""));
     if (!doctor) throw new ClinicError("DOCTOR_NOT_FOUND", "صفحة الحجز غير موجودة", 404);
     if (!doctor.bookingEnabled) throw new ClinicError("BOOKING_DISABLED", "الحجز الإلكتروني متوقف مؤقتًا", 409);
-    const appointment = createAppointment({
+    const appointment = await createAppointment({
       doctorId: doctor.id,
       patientName: body.patientName,
       patientPhone: body.patientPhone,

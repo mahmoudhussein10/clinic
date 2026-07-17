@@ -9,7 +9,7 @@ export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
     const status = (url.searchParams.get("status") || "all") as AppointmentStatus | "all";
-    const data = listAppointments({
+    const data = await listAppointments({
       doctorId: url.searchParams.get("doctorId") || undefined,
       date: url.searchParams.get("date") || undefined,
       startDate: url.searchParams.get("startDate") || undefined,
@@ -26,7 +26,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const appointment = createAppointment({ ...body, source: body.source || "manual" });
+    const appointment = await createAppointment({ ...body, source: body.source || "manual" });
     return ok(appointment, "تمت إضافة الموعد", 201);
   } catch (error) {
     return fail(error);

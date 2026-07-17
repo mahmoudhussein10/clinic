@@ -10,9 +10,10 @@ type Context = { params: Promise<{ slug: string }> };
 export async function GET(_: Request, context: Context) {
   try {
     const { slug } = await context.params;
-    const doctor = getDoctorBySlug(slug);
+    const doctor = await getDoctorBySlug(slug);
     if (!doctor) throw new ClinicError("DOCTOR_NOT_FOUND", "صفحة الحجز غير موجودة", 404);
-    const schedule = listSchedule(doctor.id).schedules.map(({ dayOfWeek, isActive }) => ({ dayOfWeek, isActive }));
+    const scheduleData = await listSchedule(doctor.id);
+    const schedule = scheduleData.schedules.map(({ dayOfWeek, isActive }) => ({ dayOfWeek, isActive }));
     const publicDoctor = {
       id: doctor.id,
       name: doctor.name,

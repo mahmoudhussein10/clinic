@@ -9,7 +9,7 @@ type Context = { params: Promise<{ id: string }> };
 export async function GET(_: Request, context: Context) {
   try {
     const { id } = await context.params;
-    return ok(getAppointment(id), "تم تحميل الموعد");
+    return ok(await getAppointment(id), "تم تحميل الموعد");
   } catch (error) {
     return fail(error);
   }
@@ -19,7 +19,7 @@ export async function PATCH(request: Request, context: Context) {
   try {
     const { id } = await context.params;
     const body = await request.json();
-    return ok(updateAppointment(id, body), "تم تحديث الموعد");
+    return ok(await updateAppointment(id, body), "تم تحديث الموعد");
   } catch (error) {
     return fail(error);
   }
@@ -28,7 +28,7 @@ export async function PATCH(request: Request, context: Context) {
 export async function DELETE(_: Request, context: Context) {
   try {
     const { id } = await context.params;
-    return ok(cancelAppointment(id), "تم إلغاء الموعد");
+    return ok(await cancelAppointment(id), "تم إلغاء الموعد");
   } catch (error) {
     return fail(error);
   }

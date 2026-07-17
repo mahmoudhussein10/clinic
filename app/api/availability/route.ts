@@ -9,7 +9,7 @@ export async function GET(request: Request) {
     const url = new URL(request.url);
     const date = url.searchParams.get("date");
     if (!date) throw new Error("DATE_REQUIRED");
-    const slots = getAvailability({
+    const slots = await getAvailability({
       date,
       doctorId: url.searchParams.get("doctorId") || undefined,
       excludeAppointmentId: url.searchParams.get("excludeAppointmentId") || undefined,
