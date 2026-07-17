@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Doctor {
+  id               String              @id
+  name             String
+  specialization   String
+  phone            String
+  clinicName       String              @map("clinic_name")
+  bookingSlug      String              @unique @map("booking_slug")
+  timezone         String              @default("Africa/Cairo")
+  bookingEnabled   Boolean             @default(true) @map("booking_enabled")
+  address          String
+  bio              String
+  maxDaily         Int                 @default(20) @map("max_daily")
+  minLeadHours     Int                 @default(2) @map("min_lead_hours")
+  maxFutureDays    Int                 @default(90) @map("max_future_days")
+  createdAt        DateTime            @default(now()) @map("created_at")
+  updatedAt        DateTime            @updatedAt @map("updated_at")
+  appointments     Appointment[]
+  schedules        Schedule[]
+  exceptions       ScheduleException[]
+
+  @@map("doctors")
+}
+
+model Patient {
+  id           String        @id
+  name         String
+  phone        String        @unique
+  email        String?
+  notes        String        @default("")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  appointments Appointment[]
+
+  @@map("patients")
+}
+
+model Appointment {
+  id              String   @id
+  doctorId        String   @map("doctor_id")
+  patientId       String   @map("patient_id")
+  patientName     String   @map("patient_name")
+  patientPhone    String   @map("patient_phone")
+  appointmentDate DateTime @db.Date @map("appointment_date")
+  startTime       String   @db.VarChar(5) @map("start_time")
+  endTime         String   @db.VarChar(5) @map("end_time")
+  status          String   @default("confirmed")
+  notes           String   @default("")
+  source          String   @default("manual")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  doctor          Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  patient         Patient  @relation(fields: [patientId], references: [id], onDelete: Restrict)
+
+  @@index([doctorId, appointmentDate])
+  @@index([patientPhone])
+  @@index([patientId])
+  @@map("appointments")
+}
+
+model Schedule {
+  id            String  @id
+  doctorId      String  @map("doctor_id")
+  dayOfWeek     Int     @map("day_of_week")
+  startTime     String  @db.VarChar(5) @map("start_time")
+  endTime       String  @db.VarChar(5) @map("end_time")
+  slotDuration  Int     @default(30) @map("slot_duration")
+  breakMinutes  Int     @default(0) @map("break_minutes")
+  isActive      Boolean @default(true) @map("is_active")
+  doctor        Doctor  @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@unique([doctorId, dayOfWeek])
+  @@map("schedules")
+}
+
+model ScheduleException {
+  id        String   @id
+  doctorId  String   @map("doctor_id")
+  date      DateTime @db.Date
+  type      String
+  startTime String?  @db.VarChar(5) @map("start_time")
+  endTime   String?  @db.VarChar(5) @map("end_time")
+  reason    String   @default("")
+  createdAt DateTime @default(now()) @map("created_at")
+  doctor    Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@index([doctorId, date])
+  @@map("schedule_exceptions")
+}

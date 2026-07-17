@@ -11,14 +11,17 @@
     "start": "next start",
     "test": "npm run build && node --test tests/rendered-html.test.mjs",
     "lint": "eslint app lib next.config.ts",
-    "db:generate": "drizzle-kit generate"
+    "postinstall": "prisma generate",
+    "prisma:generate": "prisma generate",
+    "db:deploy": "prisma migrate deploy"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.1.0",
-    "drizzle-orm": "0.45.2",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
     "lucide-react": "^1.24.0",
     "next": "16.2.6",
-    "pg-mem": "^3.0.14",
+    "pg": "^8.22.0",
+    "prisma": "^7.8.0",
     "react": "19.2.6",
     "react-dom": "19.2.6"
   },
@@ -30,7 +33,6 @@
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "6.0.2",
     "@vitejs/plugin-rsc": "0.5.26",
-    "drizzle-kit": "0.31.10",
     "eslint": "9.39.4",
     "eslint-config-next": "16.2.6",
     "react-server-dom-webpack": "19.2.6",

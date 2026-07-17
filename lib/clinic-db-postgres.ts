@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { neon } from "@neondatabase/serverless";
+import { getPrisma } from "./prisma";
 import type {
   Appointment, AppointmentSource, AppointmentStatus, AvailabilitySlot, ClinicStats,
   Doctor, Schedule, ScheduleException,
@@ -9,18 +9,11 @@ const DEFAULT_DOCTOR_ID = "doctor_reem";
 const DEFAULT_SLUG = "alreem-clinic";
 const ACTIVE_STATUSES: AppointmentStatus[] = ["pending", "confirmed", "completed", "no_show"];
 
-type QueryResult<T> = { rows: T[] } | T[];
-type DatabaseClient = { query<T>(text: string, values?: unknown[]): Promise<QueryResult<T>> };
-type ClinicGlobal = typeof globalThis & {
-  __clinicClient?: Promise<DatabaseClient>;
-  __clinicSchema?: Promise<void>;
-};
-
 type DbAppointment = {
   id: string; doctor_id: string; patient_id: string; patient_name: string;
-  patient_phone: string; appointment_date: string; start_time: string; end_time: string;
+  patient_phone: string; appointment_date: string | Date; start_time: string; end_time: string;
   status: AppointmentStatus; notes: string; source: AppointmentSource;
-  created_at: string; updated_at: string;
+  created_at: string | Date; updated_at: string | Date;
 };
 type DbDoctor = {
   id: string; name: string; specialization: string; phone: string; clinic_name: string;
@@ -32,7 +25,7 @@ type DbSchedule = {
   slot_duration: number; break_minutes: number; is_active: boolean;
 };
 type DbException = {
-  id: string; doctor_id: string; date: string; type: "closed" | "break";
+  id: string; doctor_id: string; date: string | Date; type: "closed" | "break";
   start_time: string | null; end_time: string | null; reason: string;
 };
 
@@ -40,90 +33,24 @@ export class ClinicError extends Error {
   constructor(public code: string, message: string, public status = 400) { super(message); }
 }
 
-async function createClient(): Promise<DatabaseClient> {
-  const url = process.env.DATABASE_URL;
-  if (url) {
-    const sql = neon(url);
-    return { query: async <T>(text: string, values: unknown[] = []) => sql.query(text, values) as Promise<T[]> };
-  }
-  if (process.env.VERCEL || process.env.NODE_ENV === "production") {
-    throw new ClinicError("DATABASE_NOT_CONFIGURED", "DATABASE_URL غير مضبوط على بيئة النشر", 500);
-  }
-  const { newDb } = await import("pg-mem");
-  const memory = newDb({ autoCreateForeignKeyIndices: true });
-  const { Pool } = memory.adapters.createPg();
-  const pool = new Pool();
-  return { query: <T>(text: string, values: unknown[] = []) => pool.query(text, values) as Promise<{ rows: T[] }> };
-}
-
-async function client() {
-  const globalRef = globalThis as ClinicGlobal;
-  globalRef.__clinicClient ??= createClient();
-  return globalRef.__clinicClient;
-}
-
-function rows<T>(result: QueryResult<T>) { return Array.isArray(result) ? result : result.rows; }
-async function rawQuery<T>(text: string, values: unknown[] = []) { return rows(await (await client()).query<T>(text, values)); }
-
-async function ensureSchema() {
-  const globalRef = globalThis as ClinicGlobal;
-  globalRef.__clinicSchema ??= (async () => {
-    const statements = [
-      `CREATE TABLE IF NOT EXISTS doctors (
-        id TEXT PRIMARY KEY, name TEXT NOT NULL, specialization TEXT NOT NULL, phone TEXT NOT NULL,
-        clinic_name TEXT NOT NULL, booking_slug TEXT NOT NULL UNIQUE, timezone TEXT NOT NULL DEFAULT 'Africa/Cairo',
-        booking_enabled BOOLEAN NOT NULL DEFAULT TRUE, address TEXT NOT NULL DEFAULT '', bio TEXT NOT NULL DEFAULT '',
-        max_daily INTEGER NOT NULL DEFAULT 20, min_lead_hours INTEGER NOT NULL DEFAULT 2,
-        max_future_days INTEGER NOT NULL DEFAULT 60, created_at TIMESTAMPTZ NOT NULL, updated_at TIMESTAMPTZ NOT NULL
-      )`,
-      `CREATE TABLE IF NOT EXISTS patients (
-        id TEXT PRIMARY KEY, name TEXT NOT NULL, phone TEXT NOT NULL UNIQUE, notes TEXT NOT NULL DEFAULT '',
-        created_at TIMESTAMPTZ NOT NULL, updated_at TIMESTAMPTZ NOT NULL
-      )`,
-      `CREATE TABLE IF NOT EXISTS appointments (
-        id TEXT PRIMARY KEY, doctor_id TEXT NOT NULL REFERENCES doctors(id), patient_id TEXT NOT NULL REFERENCES patients(id),
-        patient_name TEXT NOT NULL, patient_phone TEXT NOT NULL, appointment_date DATE NOT NULL,
-        start_time TEXT NOT NULL, end_time TEXT NOT NULL,
-        status TEXT NOT NULL CHECK(status IN ('pending','confirmed','completed','cancelled','no_show')),
-        notes TEXT NOT NULL DEFAULT '', source TEXT NOT NULL CHECK(source IN ('public_booking','manual','whatsapp')),
-        created_at TIMESTAMPTZ NOT NULL, updated_at TIMESTAMPTZ NOT NULL
-      )`,
-      `CREATE UNIQUE INDEX IF NOT EXISTS unique_active_doctor_slot
-        ON appointments(doctor_id, appointment_date, start_time) WHERE status <> 'cancelled'`,
-      `CREATE INDEX IF NOT EXISTS appointment_date_idx ON appointments(doctor_id, appointment_date)`,
-      `CREATE INDEX IF NOT EXISTS appointment_phone_idx ON appointments(patient_phone)`,
-      `CREATE TABLE IF NOT EXISTS schedules (
-        id TEXT PRIMARY KEY, doctor_id TEXT NOT NULL REFERENCES doctors(id), day_of_week INTEGER NOT NULL CHECK(day_of_week BETWEEN 0 AND 6),
-        start_time TEXT NOT NULL, end_time TEXT NOT NULL, slot_duration INTEGER NOT NULL,
-        break_minutes INTEGER NOT NULL DEFAULT 0, is_active BOOLEAN NOT NULL DEFAULT TRUE,
-        UNIQUE(doctor_id, day_of_week)
-      )`,
-      `CREATE TABLE IF NOT EXISTS schedule_exceptions (
-        id TEXT PRIMARY KEY, doctor_id TEXT NOT NULL REFERENCES doctors(id), date DATE NOT NULL,
-        type TEXT NOT NULL CHECK(type IN ('closed','break')), start_time TEXT, end_time TEXT,
-        reason TEXT NOT NULL DEFAULT '', created_at TIMESTAMPTZ NOT NULL
-      )`,
-    ];
-    for (const statement of statements) await rawQuery(statement);
-    const now = new Date().toISOString();
-    await rawQuery(`INSERT INTO doctors
-      (id,name,specialization,phone,clinic_name,booking_slug,timezone,booking_enabled,address,bio,max_daily,min_lead_hours,max_future_days,created_at,updated_at)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,TRUE,$8,$9,20,2,60,$10,$10) ON CONFLICT (id) DO NOTHING`,
-      [DEFAULT_DOCTOR_ID,"د. ريم","طب عام ومتابعة","201000000000","عيادة الريم",DEFAULT_SLUG,"Africa/Cairo","القاهرة، مصر","رعاية طبية منظمة ومواعيد دقيقة بدون انتظار طويل.",now]);
-    for (const day of [0,1,2,3,4,5,6]) {
-      await rawQuery(`INSERT INTO schedules (id,doctor_id,day_of_week,start_time,end_time,slot_duration,break_minutes,is_active)
-        VALUES ($1,$2,$3,'16:00','22:00',30,0,$4) ON CONFLICT (doctor_id,day_of_week) DO NOTHING`,
-        [`schedule_${day}`,DEFAULT_DOCTOR_ID,day,day !== 5]);
+async function query<T>(text: string, values: unknown[] = []) {
+  try {
+    return await getPrisma().$queryRawUnsafe<T[]>(text, ...values);
+  } catch (error) {
+    console.error("Database query failed", error instanceof Error ? error.message : "Unknown database error");
+    if (error instanceof Error && error.message.includes("DATABASE_URL")) {
+      throw new ClinicError("DATABASE_NOT_CONFIGURED", "قاعدة البيانات غير مضبوطة على بيئة النشر", 500);
     }
-  })();
-  return globalRef.__clinicSchema;
+    throw error;
+  }
 }
 
-async function query<T>(text: string, values: unknown[] = []) { await ensureSchema(); return rawQuery<T>(text, values); }
-
+function dateOnly(value: string | Date) {
+  return value instanceof Date ? value.toISOString().slice(0, 10) : String(value).slice(0, 10);
+}
 function mapAppointment(row: DbAppointment): Appointment {
   return { id: row.id, doctorId: row.doctor_id, patientId: row.patient_id, patientName: row.patient_name,
-    patientPhone: row.patient_phone, appointmentDate: String(row.appointment_date).slice(0,10), startTime: row.start_time,
+    patientPhone: row.patient_phone, appointmentDate: dateOnly(row.appointment_date), startTime: row.start_time,
     endTime: row.end_time, status: row.status, notes: row.notes, source: row.source,
     createdAt: new Date(row.created_at).toISOString(), updatedAt: new Date(row.updated_at).toISOString() };
 }
@@ -133,7 +60,7 @@ function mapDoctor(row: DbDoctor): Doctor { return { id: row.id, name: row.name,
 function mapSchedule(row: DbSchedule): Schedule { return { id: row.id, doctorId: row.doctor_id, dayOfWeek: Number(row.day_of_week),
   startTime: row.start_time, endTime: row.end_time, slotDuration: Number(row.slot_duration), breakMinutes: Number(row.break_minutes), isActive: Boolean(row.is_active) }; }
 function mapException(row: DbException): ScheduleException { return { id: row.id, doctorId: row.doctor_id,
-  date: String(row.date).slice(0,10), type: row.type, startTime: row.start_time, endTime: row.end_time, reason: row.reason }; }
+  date: dateOnly(row.date), type: row.type, startTime: row.start_time, endTime: row.end_time, reason: row.reason }; }
 
 function cleanName(value: unknown) { const name = String(value || "").trim().replace(/\s+/g," "); if (name.length < 2 || name.length > 80) throw new ClinicError("INVALID_PATIENT_NAME","اكتب اسم المريض بشكل صحيح"); return name; }
 export function normalizeEgyptPhone(value: unknown) { let phone = String(value || "").replace(/[^\d+]/g,""); if (phone.startsWith("+")) phone=phone.slice(1); if (phone.startsWith("0020")) phone=phone.slice(2); if (phone.startsWith("01")&&phone.length===11) phone=`20${phone.slice(1)}`; if (!/^20(?:10|11|12|15)\d{8}$/.test(phone)) throw new ClinicError("INVALID_PHONE","أدخل رقم موبايل مصري صحيح مثل 01012345678"); return phone; }

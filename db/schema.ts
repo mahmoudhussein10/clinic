@@ -1,1 +1,0 @@
-export * from "./clinic-schema";
