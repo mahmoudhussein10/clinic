@@ -3,6 +3,8 @@ import { headers } from "next/headers";
 import "./globals.css";
 import "./clinic-functional.css";
 import "./design-system.css";
+import "./notifications.css";
+import { PwaRegister } from "@/components/pwa-register";
 
 export async function generateMetadata(): Promise<Metadata> {
   const requestHeaders = await headers();
@@ -27,5 +29,5 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="ar" dir="rtl"><body>{children}</body></html>;
+  return <html lang="ar" dir="rtl"><body><PwaRegister />{children}</body></html>;
 }

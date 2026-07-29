@@ -5,14 +5,11 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-function withEmailStatus<T extends object>(data: T) {
-  return { ...data, emailProviderConfigured: Boolean(process.env.RESEND_API_KEY?.trim()) };
-}
 
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
-    return ok(withEmailStatus(await listSchedule(url.searchParams.get("doctorId") || undefined)), "تم تحميل جدول العمل");
+    return ok(await listSchedule(url.searchParams.get("doctorId") || undefined), "تم تحميل جدول العمل");
   } catch (error) {
     return fail(error);
   }
@@ -20,7 +17,7 @@ export async function GET(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    return ok(withEmailStatus(await updateSchedule(await request.json())), "تم حفظ جدول العمل");
+    return ok(await updateSchedule(await request.json()), "تم حفظ جدول العمل");
   } catch (error) {
     return fail(error);
   }
@@ -28,7 +25,7 @@ export async function PUT(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    return ok(withEmailStatus(await addScheduleException(await request.json())), "تمت إضافة الاستثناء", 201);
+    return ok(await addScheduleException(await request.json()), "تمت إضافة الاستثناء", 201);
   } catch (error) {
     return fail(error);
   }

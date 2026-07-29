@@ -261,3 +261,81 @@ input,select,textarea,time,.appointment-table,.live-stats,.booking-progress,.pub
 .clinic-contact-fields > p.email-setup small {
   color: #8b6963;
 }
+
+/* Balanced admin settings and compact appointment layout */
+.settings-live-layout {
+  align-items: start;
+}
+.schedule-settings-panel,
+.settings-side-stack {
+  align-self: start;
+}
+.schedule-settings-panel {
+  min-height: 0;
+}
+.clinic-contact-settings,
+.exceptions-panel,
+.booking-rules {
+  overflow: hidden;
+}
+.compact-appointments > button > span:nth-of-type(2) {
+  min-width: 0;
+}
+.compact-appointments > button > span:nth-of-type(2) strong,
+.compact-appointments > button > span:nth-of-type(2) small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (max-width: 480px) {
+  .real-schedule-panel {
+    overflow: hidden;
+  }
+  .compact-appointments {
+    margin-top: 12px;
+  }
+  .compact-appointments > button {
+    min-height: 98px;
+    padding: 13px 0;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "time patient"
+      "status patient";
+    gap: 8px 13px;
+    align-items: center;
+  }
+  .compact-appointments > button time {
+    grid-area: time;
+    justify-self: start;
+    white-space: nowrap;
+    font-size: 16px;
+  }
+  .compact-appointments > button .avatar {
+    display: none;
+  }
+  .compact-appointments > button > span:nth-of-type(2) {
+    grid-area: patient;
+    width: 100%;
+    align-self: center;
+  }
+  .compact-appointments > button > span:nth-of-type(2) strong {
+    font-size: 16px;
+  }
+  .compact-appointments > button .status-pill-lg {
+    grid-area: status;
+    justify-self: start;
+    min-width: 78px;
+  }
+}
+@media (max-width: 360px) {
+  .real-schedule-panel {
+    padding-inline: 15px;
+  }
+  .compact-appointments > button {
+    gap: 7px 10px;
+  }
+  .compact-appointments > button time,
+  .compact-appointments > button > span:nth-of-type(2) strong {
+    font-size: 15px;
+  }
+}

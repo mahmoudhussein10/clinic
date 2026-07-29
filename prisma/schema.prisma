@@ -7,26 +7,31 @@ datasource db {
 }
 
 model Doctor {
-  id               String              @id
-  name             String
-  specialization   String
-  phone            String
-  whatsappPhone   String              @default("") @map("whatsapp_phone")
-  email            String              @default("")
-  clinicName       String              @map("clinic_name")
-  bookingSlug      String              @unique @map("booking_slug")
-  timezone         String              @default("Africa/Cairo")
-  bookingEnabled   Boolean             @default(true) @map("booking_enabled")
-  address          String
-  bio              String
-  maxDaily         Int                 @default(20) @map("max_daily")
-  minLeadHours     Int                 @default(2) @map("min_lead_hours")
-  maxFutureDays    Int                 @default(90) @map("max_future_days")
-  createdAt        DateTime            @default(now()) @map("created_at")
-  updatedAt        DateTime            @updatedAt @map("updated_at")
-  appointments     Appointment[]
-  schedules        Schedule[]
-  exceptions       ScheduleException[]
+  id                      String                   @id
+  name                    String
+  specialization          String
+  phone                   String
+  whatsappPhone           String                   @default("") @map("whatsapp_phone")
+  email                   String                   @default("")
+  clinicName              String                   @map("clinic_name")
+  bookingSlug             String                   @unique @map("booking_slug")
+  timezone                String                   @default("Africa/Cairo")
+  bookingEnabled          Boolean                  @default(true) @map("booking_enabled")
+  address                 String
+  bio                     String
+  maxDaily                Int                      @default(20) @map("max_daily")
+  minLeadHours            Int                      @default(2) @map("min_lead_hours")
+  maxFutureDays           Int                      @default(90) @map("max_future_days")
+  createdAt               DateTime                 @default(now()) @map("created_at")
+  updatedAt               DateTime                 @updatedAt @map("updated_at")
+  appointments            Appointment[]
+  schedules               Schedule[]
+  exceptions              ScheduleException[]
+  clinicUsers             ClinicUser[]
+  notifications           Notification[]
+  pushSubscriptions       PushSubscription[]
+  notificationPreferences NotificationPreference[]
+  reminderDeliveries      ReminderDelivery[]
 
   @@map("doctors")
 }
@@ -45,21 +50,22 @@ model Patient {
 }
 
 model Appointment {
-  id              String   @id
-  doctorId        String   @map("doctor_id")
-  patientId       String   @map("patient_id")
-  patientName     String   @map("patient_name")
-  patientPhone    String   @map("patient_phone")
-  appointmentDate DateTime @db.Date @map("appointment_date")
-  startTime       String   @db.VarChar(5) @map("start_time")
-  endTime         String   @db.VarChar(5) @map("end_time")
-  status          String   @default("confirmed")
-  notes           String   @default("")
-  source          String   @default("manual")
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
-  doctor          Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
-  patient         Patient  @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  id                 String             @id
+  doctorId           String             @map("doctor_id")
+  patientId          String             @map("patient_id")
+  patientName        String             @map("patient_name")
+  patientPhone       String             @map("patient_phone")
+  appointmentDate    DateTime           @map("appointment_date") @db.Date
+  startTime          String             @map("start_time") @db.VarChar(5)
+  endTime            String             @map("end_time") @db.VarChar(5)
+  status             String             @default("confirmed")
+  notes              String             @default("")
+  source             String             @default("manual")
+  createdAt          DateTime           @default(now()) @map("created_at")
+  updatedAt          DateTime           @updatedAt @map("updated_at")
+  doctor             Doctor             @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  patient            Patient            @relation(fields: [patientId], references: [id], onDelete: Restrict)
+  reminderDeliveries ReminderDelivery[]
 
   @@index([doctorId, appointmentDate])
   @@index([patientPhone])
@@ -68,15 +74,15 @@ model Appointment {
 }
 
 model Schedule {
-  id            String  @id
-  doctorId      String  @map("doctor_id")
-  dayOfWeek     Int     @map("day_of_week")
-  startTime     String  @db.VarChar(5) @map("start_time")
-  endTime       String  @db.VarChar(5) @map("end_time")
-  slotDuration  Int     @default(30) @map("slot_duration")
-  breakMinutes  Int     @default(0) @map("break_minutes")
-  isActive      Boolean @default(true) @map("is_active")
-  doctor        Doctor  @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  id           String  @id
+  doctorId     String  @map("doctor_id")
+  dayOfWeek    Int     @map("day_of_week")
+  startTime    String  @map("start_time") @db.VarChar(5)
+  endTime      String  @map("end_time") @db.VarChar(5)
+  slotDuration Int     @default(30) @map("slot_duration")
+  breakMinutes Int     @default(0) @map("break_minutes")
+  isActive     Boolean @default(true) @map("is_active")
+  doctor       Doctor  @relation(fields: [doctorId], references: [id], onDelete: Cascade)
 
   @@unique([doctorId, dayOfWeek])
   @@map("schedules")
@@ -87,12 +93,113 @@ model ScheduleException {
   doctorId  String   @map("doctor_id")
   date      DateTime @db.Date
   type      String
-  startTime String?  @db.VarChar(5) @map("start_time")
-  endTime   String?  @db.VarChar(5) @map("end_time")
+  startTime String?  @map("start_time") @db.VarChar(5)
+  endTime   String?  @map("end_time") @db.VarChar(5)
   reason    String   @default("")
   createdAt DateTime @default(now()) @map("created_at")
   doctor    Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
 
   @@index([doctorId, date])
   @@map("schedule_exceptions")
+}
+
+model ClinicUser {
+  id                     String                  @id
+  clinicId               String                  @map("clinic_id")
+  email                  String
+  name                   String
+  createdAt              DateTime                @default(now()) @map("created_at")
+  updatedAt              DateTime                @updatedAt @map("updated_at")
+  clinic                 Doctor                  @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  notifications          Notification[]
+  pushSubscriptions      PushSubscription[]
+  notificationPreference NotificationPreference?
+  reminderDeliveries     ReminderDelivery[]
+
+  @@unique([clinicId, email])
+  @@index([email])
+  @@map("clinic_users")
+}
+
+model Notification {
+  id         String     @id
+  userId     String     @map("user_id")
+  clinicId   String     @map("clinic_id")
+  title      String
+  message    String
+  type       String
+  priority   String     @default("normal")
+  isRead     Boolean    @default(false) @map("is_read")
+  actionUrl  String?    @map("action_url")
+  entityType String?    @map("entity_type")
+  entityId   String?    @map("entity_id")
+  createdAt  DateTime   @default(now()) @map("created_at")
+  readAt     DateTime?  @map("read_at")
+  user       ClinicUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clinic     Doctor     @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead, createdAt])
+  @@index([clinicId, createdAt])
+  @@index([type])
+  @@map("notifications")
+}
+
+model PushSubscription {
+  id           String     @id
+  userId       String     @map("user_id")
+  clinicId     String     @map("clinic_id")
+  endpoint     String     @unique
+  p256dh       String
+  auth         String
+  userAgent    String     @default("") @map("user_agent")
+  deviceName   String     @default("") @map("device_name")
+  enabled      Boolean    @default(true)
+  failureCount Int        @default(0) @map("failure_count")
+  lastUsedAt   DateTime?  @map("last_used_at")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  user         ClinicUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clinic       Doctor     @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+
+  @@index([userId, enabled])
+  @@index([clinicId])
+  @@map("push_subscriptions")
+}
+
+model NotificationPreference {
+  id                   String     @id
+  userId               String     @unique @map("user_id")
+  clinicId             String     @map("clinic_id")
+  newBookings          Boolean    @default(true) @map("new_bookings")
+  cancellations        Boolean    @default(true)
+  appointmentUpdates   Boolean    @default(true) @map("appointment_updates")
+  patientArrivals      Boolean    @default(true) @map("patient_arrivals")
+  appointmentReminders Boolean    @default(true) @map("appointment_reminders")
+  reminderMinutes      Int        @default(30) @map("reminder_minutes")
+  pushEnabled          Boolean    @default(true) @map("push_enabled")
+  inAppEnabled         Boolean    @default(true) @map("in_app_enabled")
+  createdAt            DateTime   @default(now()) @map("created_at")
+  updatedAt            DateTime   @updatedAt @map("updated_at")
+  user                 ClinicUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clinic               Doctor     @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+
+  @@index([clinicId])
+  @@map("notification_preferences")
+}
+
+model ReminderDelivery {
+  id              String      @id
+  appointmentId   String      @map("appointment_id")
+  userId          String      @map("user_id")
+  clinicId        String      @map("clinic_id")
+  intervalMinutes Int         @map("interval_minutes")
+  deliveredAt     DateTime    @default(now()) @map("delivered_at")
+  createdAt       DateTime    @default(now()) @map("created_at")
+  appointment     Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  user            ClinicUser  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clinic          Doctor      @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+
+  @@unique([appointmentId, userId, intervalMinutes])
+  @@index([clinicId, deliveredAt])
+  @@map("reminder_deliveries")
 }

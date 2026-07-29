@@ -3,7 +3,8 @@ export type AppointmentStatus =
   | "confirmed"
   | "completed"
   | "cancelled"
-  | "no_show";
+  | "no_show"
+  | "arrived";
 
 export type AppointmentSource = "public_booking" | "manual" | "whatsapp";
 
